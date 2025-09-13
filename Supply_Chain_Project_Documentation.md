@@ -68,13 +68,13 @@ create index idxSupplierCompanyName on Supplier (
     CompanyName ASC
 );
 
-# Adding Foreign Key Constraints
+/* Adding Foreign Key Constraints */
 alter table Orders add foreign key(CustomerId) references Customer(Id);
 alter table OrderItem add foreign key(ProductId) references Product(Id);
 alter table OrderItem add foreign key(OrderId) references Orders(Id);
 alter table Product add foreign key(SupplierId) references Supplier(Id);
 
-II.	Data Insertion
+### II.	Data Insertion
 This section contains the INSERT statements to populate the tables with data.
 # Inserting Data into Tables
 
