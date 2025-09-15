@@ -231,79 +231,79 @@ insert into OrderItem (Id, OrderId, ProductId, UnitPrice, Quantity) values
 (49,17,1,7.70,25),
 (50,18,17,31.20,30);
 
-III.	Data Analysis
+### III.	Data Analysis
 This part contains the queries for various data analysis tasks, categorized by difficulty level.
-A.	Level 1 Questions
-1.	Read data from all tables
+#### A.	Level 1 Questions
+##### 1.	Read data from all tables
 select * from Customer;
 select * from Supplier;
 select * from Product;
 select * from Orders;
 select * from OrderItem;
-2.	Find the city-wise count of customers
+##### 2.	Find the city-wise count of customers
 select City, count(City) as `No of Customers`
 from Customer
 group by City;
-3.	Display products that are not discontinued.
+##### 3.	Display products that are not discontinued.
 Note: The original query used IsDiscontinued = 1 which shows discontinued products. The corrected query uses IsDiscontinued = 0.
 select *
 from Product
 where IsDiscontinued = 0;
-4.	Display companies and the products they supply.
+##### 4.	Display companies and the products they supply.
 select s.Id, s.CompanyName, s.ContactName, p.ProductName
 from Supplier s
 join Product p on s.Id = p.SupplierId;
-5.	Display customer information for those who stay in 'Lahore'.
+##### 5.	Display customer information for those who stay in 'Lahore'.
 select *
 from Customer
 where City = 'Lahore';
-6.	Display the costliest item that is ordered by the customer.
+##### 6.	Display the costliest item that is ordered by the customer.
 Note: This query finds the single most expensive product based on its UnitPrice from the Product table.
 select ProductName, UnitPrice
 from Product
 order by UnitPrice desc
 limit 1;
-7.	Display supplier ID who owns the highest number of products.
+##### 7.	Display supplier ID who owns the highest number of products.
 select p.SupplierId, sp.CompanyName, count(p.SupplierId) as product_count
 from Product p
 join Supplier sp on sp.Id = p.SupplierId
 group by p.SupplierId, sp.CompanyName
 order by product_count desc
 limit 1;
-8.	Display month-wise of the orders placed.
+##### 8.	Display month-wise of the orders placed.
 Note: The STR_TO_DATE() function is used to convert the string OrderDate into a proper date format before extracting the month.
 select monthname(str_to_date(OrderDate, '%b %e %Y %H:%i:%s')) as MonthName, count(Id) as `Total Orders`
 from Orders
 group by MonthName
 order by month(str_to_date(OrderDate, '%b %e %Y %H:%i:%s')) asc;
-9.	Which city has the maximum number of suppliers?
+##### 9.	Which city has the maximum number of suppliers?
 select City, count(Id) as Suppliers
 from Supplier
 group by City
 order by Suppliers desc
 limit 1;
-10.	Which customers did not place any orders?
+##### 10.	Which customers did not place any orders?
 select C.Name, count(O.CustomerId) as noofOrders
 from Customer as C
 left join Orders as O on C.Id = O.CustomerId
 group by C.Name
 having noofOrders = 0;
 
-B.	Level 2 Questions
-1)	Arrange Product ID and Name based on high demand by the customer.
+#### B.	Level 2 Questions
+##### 1)	Arrange Product ID and Name based on high demand by the customer.
 Note: The query calculates demand based on the sum of Quantity from the OrderItem table.
 select P.Id as `Product ID`, P.ProductName as `Product Name`, sum(OI.Quantity) as Quantity
 from OrderItem as OI
 join Product as P on OI.ProductId = P.Id
 group by P.Id, P.ProductName
 order by Quantity desc;
-2)	Display the total number of orders and total revenue delivered every month.
+##### 2)	Display the total number of orders and total revenue delivered every month.
 Note: Corrected group by clause to group by the month name.
 select monthname(str_to_date(OrderDate, '%b %e %Y %H:%i:%s')) as MonthName, count(Id) as `No of Orders`, sum(TotalAmount) as `Total Revenue`
 from Orders
 group by MonthName
 order by month(str_to_date(OrderDate, '%b %e %Y %H:%i:%s')) asc;
-3)	Display the customer details whose order amount is maximum including their past orders and total orders placed.
+##### 3)	Display the customer details whose order amount is maximum including their past orders and total orders placed.
 Note: The query finds the customer with the highest total amount across all their orders.
 select C.Name, C.City, C.Phone, count(O.CustomerId) as `No of Orders`, sum(O.TotalAmount) as Amount
 from Customer as C
@@ -311,24 +311,24 @@ join Orders as O on C.Id = O.CustomerId
 group by C.Id, C.Name, C.City, C.Phone
 order by Amount desc
 limit 1;
-4)	Display the total amount ordered by each customer from high to low.
+##### 4)	Display the total amount ordered by each customer from high to low.
 select C.Name, C.City, C.Phone, sum(O.TotalAmount) as TotalAmount
 from Customer as C
 left join Orders as O on C.Id = O.CustomerId
 group by C.Id, C.Name, C.City, C.Phone
 order by TotalAmount desc;
-5)	Display the total amount ordered by each customer from high to low.
+##### 5)	Display the total amount ordered by each customer from high to low.
 select C.Name, C.City, C.Phone, sum(O.TotalAmount) as TotalAmount
 from Customer as C
 left join Orders as O on C.Id = O.CustomerId
 group by C.Id, C.Name, C.City, C.Phone
 order by TotalAmount desc;
-6)	List the current and previous order dates for each customer.
+##### 6)	List the current and previous order dates for each customer.
 select C.Name, O.OrderDate
 from Customer as C
 join Orders as O on C.Id = O.CustomerId
 order by C.Id asc, O.OrderDate asc;
-7)	Find out the top 3 suppliers in terms of revenue generated by their products.
+##### 7)	Find out the top 3 suppliers in terms of revenue generated by their products.
 select S.CompanyName, sum(OI.UnitPrice * OI.Quantity) as TotalRevenue
 from Supplier as S
 join Product as P on S.Id = P.SupplierId
@@ -336,44 +336,45 @@ join OrderItem as OI on P.Id = OI.ProductId
 group by S.Id, S.CompanyName
 order by TotalRevenue desc
 limit 3;
-8)	Display the latest order date (should not be the same as the first order date) of all the customers with customer details.
+##### 8)	Display the latest order date (should not be the same as the first order date) of all the customers with customer details.
 Note: This query finds the latest order date for each customer. The condition "not the same as the first order date" isn't strictly enforced in the result set but the MAX() function will naturally pick the latest date.
 select C.*, max(O.OrderDate) as LatestOrderDate
 from Customer as C
 join Orders as O on C.Id = O.CustomerId
 group by C.Id, C.Name, C.City, C.Phone
 order by C.Id asc;
-9)	Display the product name and supplier name for each order.
+##### 9)	Display the product name and supplier name for each order.
 select O.OrderNo, P.ProductName, S.CompanyName as SupplierName
 from Supplier as S
 join Product as P on P.SupplierId = S.Id
 join OrderItem as OI on OI.ProductId = P.Id
 join Orders as O on O.Id = OI.OrderId
 order by O.Id asc;
-C.	Level 3 Questions
-1)	Fetch the customer details who ordered more than 10 products in a single order.
+
+#### C.	Level 3 Questions
+##### 1)	Fetch the customer details who ordered more than 10 products in a single order.
 select C.Name, C.City, O.OrderNo, OI.Quantity
 from Customer as C
 join Orders as O on C.Id = O.CustomerId
 join OrderItem as OI on O.Id = OI.OrderId
 where OI.Quantity > 10;
-2)	Display all the product details with the ordered quantity size as 1.
+##### 2)	Display all the product details with the ordered quantity size as 1.
 Note: The left join is important here to include products that have never been ordered.
 select P.ProductName, P.UnitPrice, P.Package, OI.Quantity
 from Product as P
 left join OrderItem as OI on P.Id = OI.ProductId
 where OI.Quantity = 1;
-3)	Display the companies that supply products whose cost is above 100.
+##### 3)	Display the companies that supply products whose cost is above 100.
 select distinct S.CompanyName, P.ProductName, P.UnitPrice
 from Supplier as S
 join Product as P on S.Id = P.SupplierId
 where P.UnitPrice > 100
 order by P.UnitPrice desc;
-4)	Display the customer list who belongs to the same city and arranged city-wise.
+##### 4)	Display the customer list who belongs to the same city and arranged city-wise.
 select * from Customer order by City asc;
 
-D.	Level 4 Questions
-1)	Find the total amount saved in each order, then display the orders from highest to lowest amount saved.
+#### D.	Level 4 Questions
+##### 1)	Find the total amount saved in each order, then display the orders from highest to lowest amount saved.
 Note: This query calculates the difference between the actual product price and the selling price in each order item, multiplies it by the quantity, and sums it up for each order. 
 select OI.OrderId, OI.ProductId, OI.UnitPrice as "Order Unit Price", P.UnitPrice as "Product Unit Price", 
 max((P.UnitPrice - OI.UnitPrice) * OI.Quantity) as AmountSaved from Product as P 
@@ -396,7 +397,7 @@ select * from Customer C left join Supplier S on C.City = S.City where S.City is
 union all
 select * from Customer C right join Supplier S on C.City = S.City where C.City is null;
 
-IV.	Project Summery
+### IV.	Project Summery
 This project is a practical exercise in Supply Chain Management (SCM) data analysis using SQL (Structured Query Language). It simulates a real-world scenario by creating a foundational database and then querying that data to extract valuable business insights.
 Project Structure and Database Design
 The project begins with the essential steps of setting up a relational database. It's designed around five core tables that represent key entities in a supply chain:
@@ -408,22 +409,21 @@ OrderItem: A crucial "linking" table that connects Orders and Products. It detai
 The tables are interconnected using primary keys and foreign keys, which enforce data integrity and allow you to link information across different tables using JOIN operations. For instance, the Orders table is linked to the Customer table via CustomerId, ensuring every order is associated with a specific customer.
 Data Analysis and Business Insights
 The core of the project is a series of SQL queries designed to answer specific business questions. These queries are categorized into four levels of increasing complexity, demonstrating a progressive mastery of SQL concepts.
-Level 1: Foundational Queries
+##### Level 1: Foundational Queries
 These queries focus on basic data retrieval and aggregation to get a feel for the data. Examples include:
 o	Finding the number of customers in each city.
 o	Listing products that are not discontinued.
 o	Identifying customers who have not placed any orders.
-Level 2: Intermediate Analysis
+##### Level 2: Intermediate Analysis
 This section uses more complex JOIN operations and aggregate functions to uncover deeper insights. Key questions answered here include:
 o	Identifying the most in-demand products by summing the total quantity sold.
 o	Calculating the total revenue and number of orders for each month.
 o	Pinpointing the top suppliers based on the revenue generated from their products.
-Level 3: Advanced Filtering and Logic
+##### Level 3: Advanced Filtering and Logic
 These queries involve more sophisticated filtering and multi-table joins to answer very specific questions. For example:
 o	Finding customers who purchased more than 10 units of a single product in an order.
 o	Identifying suppliers of products that cost more than a certain amount.
-
-Level 4: Strategic Business Questions
+##### Level 4: Strategic Business Questions
 The final level tackles complex, real-world business problems that require a combination of all the SQL skills demonstrated previously. This is where the project truly shines by applying technical skills to solve strategic issues. Notable examples include:
 o	Calculating the total amount of money saved by customers on discounted products.
 o	Providing business advice to a new supplier ("Mr. Kavin") by identifying high-demand products and potential competitors.
@@ -431,7 +431,7 @@ o	Creating a consolidated list of customers and suppliers to analyze regional bu
 This project is an excellent demonstration of how a structured database and the power of SQL can be used to analyze a business's health, understand customer behavior, and guide strategic decision-making. It shows the full lifecycle of a data project, from setting up the foundation to delivering actionable insights.
 
 
-V.	Highlights
+## V.	Highlights
 Here are some key findings from the data analysis:
 Customer & Order Insights
 Customer Locations: The customer base is concentrated in five cities: Lahore, Karachi, Quetta, Islamabad, and Multan. Lahore and Karachi have the highest number of customers, indicating they are key markets.
@@ -446,15 +446,15 @@ New Supplier Opportunities: For a new supplier like Mr. Kavin, the project recom
 Competitor Analysis: The key competitors for these products are 'Glowing Angels' (for soaps) and 'Iron Fitness' (for supplements), providing Mr. Kavin with a clear understanding of the market landscape.
 Geographic Gaps: The analysis revealed that some cities with customers (e.g., Peshawar) have no local suppliers, while some cities with suppliers (e.g., Multan) have no customers, indicating potential areas for market expansion and strategic partnerships.
 
-VI.	Weak Points & Problems
+### VI.	Weak Points & Problems
 As I created this project solely to practice my SQL skills and this project have some problems and according to Google Gemini - This project provides a solid foundation for a SQL portfolio, but it has several weak points and potential problems that could be addressed to make it more robust and professional.
-🐛 Data-Related Issues
+##### 🐛 Data-Related Issues
 Hardcoded Data: The project relies on hardcoded INSERT statements. In a real-world application, this is impractical. Data would be ingested from other sources, like CSV files or an application interface. The current approach is suitable for a demo but not for a dynamic system.
 Inconsistent Data Types: The OrderDate column is stored as a VARCHAR(40), which is a major design flaw. Date and time data should be stored using a dedicated data type like DATE or DATETIME. Storing dates as text makes it difficult to perform date-based calculations (e.g., finding orders within a specific date range) and can lead to data inconsistencies and slow performance. The queries had to use the complex STR_TO_DATE() function to compensate for this design choice.
 Lack of Realism: The OrderItem table's UnitPrice is different from the Product table's UnitPrice. While this can represent a discount, the project doesn't explicitly calculate this discount or the amount saved for all orders, only in the Level 4 question. The data also seems to be for a single month, which limits the scope of long-term trend analysis.
-📉 Query and Structure Problems
+##### 📉 Query and Structure Problems
 Lack of ON DELETE CASCADE: The project notes that ON DELETE CASCADE was intentionally avoided to keep historical data. This is a valid business decision, but it introduces a risk of "orphan records" if parent records (e.g., a customer) are deleted without a corresponding application-level constraint to handle the deletion of their related orders. A more robust solution would be to use a soft delete (marking a record as deleted with a flag) or a trigger to archive data instead of a hard delete.
 Redundant Queries: Many of the queries in different sections are very similar. For example, several queries look at customer data or count records. Consolidating or refactoring these could make the project more efficient and demonstrate a better understanding of query optimization.
-🖼️ Presentation and Findings
+##### 🖼️ Presentation and Findings
 Unstructured Findings: The original project code simply lists queries and their comments. A professional project would include a separate document or section that summarizes the key findings and business insights, similar to the previous response. This demonstrates the ability to not just write code, but to derive and communicate business value from it.
 Limited Visualization: While the project is a SQL-only exercise, in a real-world scenario, these findings would be presented visually using a Business Intelligence (BI) tool like Tableau or Power BI. Presenting a few mock-up dashboards would significantly enhance the project's appeal.
